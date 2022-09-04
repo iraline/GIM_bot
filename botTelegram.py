@@ -48,7 +48,7 @@ if __name__ == "__main__":
             if itemsToSearch != [""]:
                 print("Words\n\n")
                 print(itemsToSearch)
-                for i in range(len(itemsToSearch)-1):
+                for i in range(len(itemsToSearch)):
                     print(itemsToSearch[i])
                     PARAMS = {"profile":itemsToSearch[i].strip(), "search_for":"profile", "is_admin":"true"}
                     print("\n\n\n")
@@ -61,9 +61,9 @@ if __name__ == "__main__":
                     messageToUser = INITIAL_MSG
 
                     keys= ["completeAnalysis", "profileUser", "network", "language"]
-                    profileMsgs = ["Análise completa", "Perfil do usuário, Rede (seguidores e seguidos)", "Linguagem utilizada nos tweets"]
+                    profileMsgs = ["Análise completa", "Perfil do usuário", "Rede (seguidores e seguidos)", "Linguagem utilizada nos tweets"]
 
-                    for i in range(len(keys)-1):
+                    for i in range(len(keys)):
                         if (messageKeys[keys[i]] != None):
                             messageKeys[keys[i]] =  round(messageKeys[keys[i]],2)
                             messageToUser += profileMsgs[i]+": "+ str(messageKeys[keys[i]])+"\n" 
