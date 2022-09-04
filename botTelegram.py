@@ -1,6 +1,8 @@
+import jsonpickle
 import telebot
 import requests
 from config import TELEGRAM_API_KEY
+import json
 
 def getMessageInfos(data):
     messageKeys =  {"completeAnalysis": None,"profileUser": None, "network":None, "language":None }
@@ -22,31 +24,49 @@ def getMessageInfos(data):
 
     return messageKeys
 
+
 def allowMessages(message):
     return True
+def getSecondWord(text):
+    textArray = text.split(' ')
+    if(len(textArray) != 2):
+        raise Exception("Message in wrong format")
 
-
+    return textArray[1]
 
 if __name__ == "__main__":
     bot = telebot.TeleBot(TELEGRAM_API_KEY)
+    URL = "https://pegabot.com.br/botometer?profile=twitter&search_for=profile&is_admin=true"
+    
+    @bot.message_handler(commands=["analise"])
+    def analysis(message):
+        try:
+            formattedMessage = jsonpickle.encode(message)
+            formattedMessage  = json.loads(formattedMessage)
+            itemToSearch = getSecondWord(formattedMessage["text"])
 
+            if itemToSearch != "":                
+                r = requests.get(url = URL)
+                data = r.json()
+                messageKeys = getMessageInfos(data)
+                print(messageKeys)
+                bot.reply_to(message, "Analisando")
+        except:
+            print("Wrong message format!")
     @bot.message_handler(func=allowMessages)
     def result(message):
-        r = requests.get(url = URL)
-        data = r.json()
+
+        text = """
+        Opção disponível: 
+        /analise (Nome_Perfil)
+        """
+
         print("\n\n")
-        
-        messageKeys = getMessageInfos(data)
-        
-        print(messageKeys)
-        print("\n\n")
-        bot.reply_to(message, "Aqui é o GIM Bot")
+        bot.reply_to(message, text)
     
     # print(message)
+    # x = {"profile": message}
+    # PARAMS = {profile :}
 
-    
 
-    URL = "https://pegabot.com.br/botometer?profile=twitter&search_for=profile&is_admin=true"
-    r = requests.get(url = URL)
-    data = r.json()
     bot.polling()
