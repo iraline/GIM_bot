@@ -36,7 +36,7 @@ def getSecondWord(text):
 
 if __name__ == "__main__":
     bot = telebot.TeleBot(TELEGRAM_API_KEY)
-    URL = "https://pegabot.com.br/botometer?profile=twitter&search_for=profile&is_admin=true"
+    URL = "https://pegabot.com.br/botometer?"
     
     @bot.message_handler(commands=["analise"])
     def analysis(message):
@@ -44,15 +44,18 @@ if __name__ == "__main__":
             formattedMessage = jsonpickle.encode(message)
             formattedMessage  = json.loads(formattedMessage)
             itemToSearch = getSecondWord(formattedMessage["text"])
-
-            if itemToSearch != "":                
-                r = requests.get(url = URL)
+            # URL = "https://pegabot.com.br/botometer?profile=twitter&search_for=profile&is_admin=true"
+            if itemToSearch != "":
+                print(itemToSearch)
+                PARAMS = {"profile":itemToSearch.strip(), "search_for":"profile", "is_admin":"true"}
+                print("\n\n\n")
+                r = requests.get(url = URL, params =PARAMS)
                 data = r.json()
                 messageKeys = getMessageInfos(data)
                 print(messageKeys)
                 bot.reply_to(message, "Analisando")
         except:
-            print("Wrong message format!")
+             print("Wrong message format!")
     @bot.message_handler(func=allowMessages)
     def result(message):
 
@@ -64,9 +67,6 @@ if __name__ == "__main__":
         print("\n\n")
         bot.reply_to(message, text)
     
-    # print(message)
-    # x = {"profile": message}
-    # PARAMS = {profile :}
 
 
     bot.polling()
