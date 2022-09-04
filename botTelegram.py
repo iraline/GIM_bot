@@ -6,21 +6,21 @@ import json
 import time
 
 def getMessageInfos(data):
-    messageKeys =  {"completeAnalysis": None,"profileUser": None, "network":None, "language":None }
+    messageKeys =  {"completeAnalysis": None, "profileUser": None, "network": None, "language": None, "username": ""}
     
     if("profiles" in data):
-        if ("bot_probability" in data["profiles"][0] and "all" in data["profiles"][0]["bot_probability"] ):
+        if("bot_probability" in data["profiles"][0] and "all" in data["profiles"][0]["bot_probability"]):
             messageKeys["completeAnalysis"] = data["profiles"][0]["bot_probability"]["all"]
             
-        if ("language_independent" in data["profiles"][0]):
+        if("language_independent" in data["profiles"][0]):
 
-            if ("user" in data["profiles"][0]["language_independent"]):
+            if("user" in data["profiles"][0]["language_independent"]):
                 messageKeys["profileUser"] = data["profiles"][0]["language_independent"]["user"]
 
-            if ("network" in data["profiles"][0]["language_independent"]):
+            if("network" in data["profiles"][0]["language_independent"]):
                 messageKeys["network"] = data["profiles"][0]["language_independent"]["network"]
 
-        if ("sentiment" in data["profiles"][0]["language_dependent"] and "value" in data["profiles"][0]["language_dependent"]["sentiment"]):
+        if("sentiment" in data["profiles"][0]["language_dependent"] and "value" in data["profiles"][0]["language_dependent"]["sentiment"]):
             messageKeys["language"] = data["profiles"][0]["language_dependent"]["sentiment"]["value"]
 
     return messageKeys
@@ -39,53 +39,69 @@ if __name__ == "__main__":
     
     @bot.message_handler(commands=["analise"])
     def analysis(message):
-        # try:
             formattedMessage = jsonpickle.encode(message)
             formattedMessage  = json.loads(formattedMessage)
             itemsToSearch = getWords(formattedMessage["text"])
             # URL = "https://pegabot.com.br/botometer?profile=twitter&search_for=profile&is_admin=true"
             
             if itemsToSearch != [""]:
-                print("Words\n\n")
+                print("Profile to search")
                 print(itemsToSearch)
-                for i in range(len(itemsToSearch)):
-                    print(itemsToSearch[i])
-                    PARAMS = {"profile":itemsToSearch[i].strip(), "search_for":"profile", "is_admin":"true"}
-                    print("\n\n\n")
-                    r = requests.get(url = URL, params =PARAMS)
-                    data = r.json()
+                for profile in range(len(itemsToSearch)):
+                    print(itemsToSearch[profile])
+                    PARAMS = {"profile":itemsToSearch[profile].strip(), "search_for":"profile", "is_admin":"true"}
+                
+                    request = requests.get(url = URL, params =PARAMS)
+                    data = request.json()
                     messageKeys = getMessageInfos(data)
-                    print(messageKeys)
-
-                    INITIAL_MSG = "Probabilidade de ser um robô: \n\n"
+               
+                    INITIAL_MSG = "Probabilidade de " + itemsToSearch[profile].strip() + " ser um robô: \n\n"
                     messageToUser = INITIAL_MSG
 
                     keys= ["completeAnalysis", "profileUser", "network", "language"]
                     profileMsgs = ["Análise completa", "Perfil do usuário", "Rede (seguidores e seguidos)", "Linguagem utilizada nos tweets"]
 
-                    for i in range(len(keys)):
-                        if (messageKeys[keys[i]] != None):
-                            messageKeys[keys[i]] =  round(messageKeys[keys[i]],2)
-                            messageToUser += profileMsgs[i]+": "+ str(messageKeys[keys[i]])+"\n" 
+                    for key in range(len(keys)):
+                        if (messageKeys[keys[key]] != None):
+                            messageKeys[keys[key]] =  round(messageKeys[keys[key]],2)
+                            messageToUser += profileMsgs[key]+": "+ str(messageKeys[keys[key]])+"\n" 
 
                     print(messageToUser)
                     if (messageToUser == INITIAL_MSG):
-                        messageToUser = "Não encontramos esse perfil, verifique se você escreveu corretamente ou se esse usuário existe"
+                        print(itemsToSearch[profile])
+                        messageToUser = "Não encontramos o perfil "+ itemsToSearch[profile].strip() + ", verifique se você escreveu corretamente ou se esse usuário existe"
                     bot.reply_to(message, messageToUser)
                     time.sleep(10)
-        # except:
-        #       print("Wrong message format!")
+   
+    @bot.message_handler(commands=["site_pegabot"])
+    def result(message):
+        text = "https://pegabot.com.br"
+    
+        bot.send_message(message.chat.id,text)
+        print("Site sent")
+
+    @bot.message_handler(commands=["como_usar"])
+    def result(message):
+        text = """
+        Para verificar se determinado perfil é um bot, basta inserir o comando /analise "perfil". 
+        Exemplo: Caso queira saber se fulano é um bot, basta inserir "/analise fulano". 
+        Caso queira saber se fulano e sicrano são um bot, basta inserir "/analise fulano sicrano"
+        """
+    
+        bot.send_message(message.chat.id,text)
+        print("Help sent")
+
     @bot.message_handler(func=allowMessages)
     def result(message):
 
         text = """
-        Opção disponível : 
-        /analise (Nome_Perfil1) (Nome_Perfil2)...
+        Opções disponíveis: 
+            /analise (Perfil1) (Perfil2)...
+            /site_pegabot Site do pegabot
+            /como_usar Como utilizar o bot
         """
-
-        print("\n\n")
-        bot.reply_to(message, text)
-    
-
+        
+        bot.send_message(message.chat.id,text)
+        print("Options sent")
 
     bot.polling()
