@@ -63,8 +63,8 @@ if __name__ == "__main__":
 
                     for iKey in range(len(keys)):
                         if (messageKeys[keys[iKey]] != None):
-                            messageKeys[keys[iKey]] =  round(messageKeys[keys[iKey]],2)
-                            messageToUser += profileMsgs[iKey]+": "+ str(messageKeys[keys[iKey]])+"\n" 
+                            messageKeys[keys[iKey]] =  round(messageKeys[keys[iKey]],2) * 100
+                            messageToUser += profileMsgs[iKey]+": "+ str(int(messageKeys[keys[iKey]]))+"%\n" 
 
                     
                     if (messageToUser == INITIAL_MSG):
