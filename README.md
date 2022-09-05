@@ -17,7 +17,7 @@ Atualmente o bot não está hospedado em servidores.
 Pré-requisitos: Conta no Telegram, Python (>=3.6)
 
 ### Instalando Pacotes
- `pip install pytelegrambot`
+ `pip install pytelegrambotapi`
 
 ### Criando bot no telegram
 No seu telegram:
@@ -26,7 +26,8 @@ No seu telegram:
 2. Envie uma mensagem para o @BotFather e aguardar o retorno com as opções.
 3. Selecione a opção /newbot.
 4. Insira o nome e username do seu bot. O username deve ser único e terminar com bot.
-5. Copie a chave API gerada pelo @BotFather e insira como valor na variável TELEGRAM_API_KEY no código.
+5. Crie o arquivo config.py com o conteúdo do configExample.py
+6. Copie a chave API gerada pelo @BotFather e insira como valor na variável TELEGRAM_API_KEY do config.py.
 
 ### Rodando o bot
  `python botTelegram.py `

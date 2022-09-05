@@ -45,31 +45,32 @@ if __name__ == "__main__":
             # URL = "https://pegabot.com.br/botometer?profile=twitter&search_for=profile&is_admin=true"
             
             if itemsToSearch != [""]:
-                print("Profile to search")
+                print("Profiles to search")
                 print(itemsToSearch)
-                for profile in range(len(itemsToSearch)):
-                    print(itemsToSearch[profile])
-                    PARAMS = {"profile":itemsToSearch[profile].strip(), "search_for":"profile", "is_admin":"true"}
+                for iProfile in range(len(itemsToSearch)):
+                    print(itemsToSearch[iProfile])
+                    PARAMS = {"profile":itemsToSearch[iProfile].strip(), "search_for":"profile", "is_admin":"true"}
                 
                     request = requests.get(url = URL, params =PARAMS)
                     data = request.json()
                     messageKeys = getMessageInfos(data)
                
-                    INITIAL_MSG = "Probabilidade de " + itemsToSearch[profile].strip() + " ser um robô: \n\n"
+                    INITIAL_MSG = "Probabilidade de " + itemsToSearch[iProfile].strip() + " ser um robô: \n\n"
                     messageToUser = INITIAL_MSG
 
                     keys= ["completeAnalysis", "profileUser", "network", "language"]
                     profileMsgs = ["Análise completa", "Perfil do usuário", "Rede (seguidores e seguidos)", "Linguagem utilizada nos tweets"]
 
-                    for key in range(len(keys)):
-                        if (messageKeys[keys[key]] != None):
-                            messageKeys[keys[key]] =  round(messageKeys[keys[key]],2)
-                            messageToUser += profileMsgs[key]+": "+ str(messageKeys[keys[key]])+"\n" 
+                    for iKey in range(len(keys)):
+                        if (messageKeys[keys[iKey]] != None):
+                            messageKeys[keys[iKey]] =  round(messageKeys[keys[iKey]],2)
+                            messageToUser += profileMsgs[iKey]+": "+ str(messageKeys[keys[iKey]])+"\n" 
 
-                    print(messageToUser)
+                    
                     if (messageToUser == INITIAL_MSG):
-                        print(itemsToSearch[profile])
-                        messageToUser = "Não encontramos o perfil "+ itemsToSearch[profile].strip() + ", verifique se você escreveu corretamente ou se esse usuário existe"
+                        messageToUser = "Não encontramos o perfil "+ itemsToSearch[iProfile].strip() + ", verifique se você escreveu corretamente ou se esse usuário existe"
+                    
+                    print(messageToUser)
                     bot.reply_to(message, messageToUser)
                     time.sleep(10)
    
